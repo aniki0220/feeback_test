@@ -118,7 +118,7 @@
     <section class="card">
       <h1>意見回饋表</h1>
       <p>歡迎留下您的寶貴意見，我們會盡快回覆。</p>
-      <form>
+      <form method="post" action="https://script.google.com/macros/s/AKfycbyjZQ74cMAZNpsPgGk_ob5PMwmlIc1Xnuwdx10TGtw1AADX9rpBAs7fGngsiSTNO9hmiw/exec">
         <label>
           姓名
           <input type="text" name="name" placeholder="請輸入您的姓名" required />
@@ -146,12 +146,8 @@
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const submitButton = form.querySelector("button[type='submit']");
-      const formData = new FormData(form);
-      const payload = {
-        name: formData.get("name"),
-        phone: formData.get("phone"),
-        message: formData.get("feedback"),
-      };
+      const payload = new FormData(form);
+      payload.set("message", payload.get("feedback"));
 
       submitButton.disabled = true;
       submitButton.textContent = "送出中...";
@@ -160,8 +156,7 @@
       fetch(scriptURL, {
         method: "POST",
         mode: "no-cors",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
+        body: payload,
       })
         .then(() => {
           statusText.textContent = "送出成功！感謝您的回饋。";
