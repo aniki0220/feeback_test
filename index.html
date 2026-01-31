@@ -133,8 +133,48 @@
           <textarea name="feedback" placeholder="請輸入您的意見" required></textarea>
         </label>
         <button type="submit">送出意見</button>
+        <span class="hint" data-status aria-live="polite"></span>
       </form>
     </section>
   </main>
+  <script>
+    const scriptURL =
+      "https://script.google.com/macros/s/AKfycbyjZQ74cMAZNpsPgGk_ob5PMwmlIc1Xnuwdx10TGtw1AADX9rpBAs7fGngsiSTNO9hmiw/exec";
+    const form = document.querySelector("form");
+    const statusText = document.querySelector("[data-status]");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const submitButton = form.querySelector("button[type='submit']");
+      const formData = new FormData(form);
+      const payload = {
+        name: formData.get("name"),
+        phone: formData.get("phone"),
+        message: formData.get("feedback"),
+      };
+
+      submitButton.disabled = true;
+      submitButton.textContent = "送出中...";
+      statusText.textContent = "";
+
+      fetch(scriptURL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+      })
+        .then(() => {
+          statusText.textContent = "送出成功！感謝您的回饋。";
+          form.reset();
+        })
+        .catch(() => {
+          statusText.textContent = "送出失敗，請稍後再試。";
+        })
+        .finally(() => {
+          submitButton.disabled = false;
+          submitButton.textContent = "送出意見";
+        });
+    });
+  </script>
 </body>
 </html>
